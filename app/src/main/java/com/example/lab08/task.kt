@@ -7,6 +7,10 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "tasks")
 data class Task(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    @ColumnInfo(name = "description") val description: String,
-    @ColumnInfo(name = "is_completed") val isCompleted: Boolean = false
+    val description: String,
+    val isCompleted: Boolean = false,
+    val priority: String = "Media",
+    val category: String = "General",
+    val repeatInterval: Int = 0,
+    val createdAt: Long = System.currentTimeMillis() // <--- Valor por defecto para evitar errores
 )

@@ -1,8 +1,10 @@
 plugins {
-    alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
-    // 1. Agregamos el plugin de Kapt para que Room funcione
-    id("kotlin-kapt")
+    id("com.android.application")
+    id("org.jetbrains.kotlin.android")
+    id("com.google.devtools.ksp")
+    // Este plugin es necesario si usas Kotlin 2.0+
+    id("org.jetbrains.kotlin.plugin.compose") version "2.0.21"
+
 }
 
 android {
@@ -31,30 +33,26 @@ android {
             )
         }
     }
+
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
+
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
+
     buildFeatures {
         compose = true
     }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
-    }
-    packaging {
-        resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
-        }
-    }
+
+    // Eliminamos composeOptions { kotlinCompilerExtensionVersion }
+    // porque ahora el plugin de arriba se encarga de eso.
 }
 
-// 2. Definimos la versión de Room
-val room_version = "2.6.1"
-
 dependencies {
+    // Librerías base de Android
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -63,13 +61,25 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation("com.google.android.gms:play-services-maps:18.2.0")
+    implementation("com.google.maps.android:maps-compose:4.3.3")
+    // Google Play Services para Maps
+    implementation("com.google.android.gms:play-services-maps:18.2.0")
 
-    // 3. Implementación de Room
+
+
+    // Iconos extendidos (para CheckCircle, Delete, etc.)
+    implementation("androidx.compose.material:material-icons-extended")
+    // --- ROOM (CONFIGURACIÓN ESTABLE) ---
+    val room_version = "2.6.1"
     implementation("androidx.room:room-runtime:$room_version")
-    kapt("androidx.room:room-compiler:$room_version")
     implementation("androidx.room:room-ktx:$room_version")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:$room_version")
+    ksp("androidx.room:room-compiler:$room_version")
 
+    // ViewModel para Compose
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.0")
+
+    // Pruebas (Opcional)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
